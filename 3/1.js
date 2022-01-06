@@ -1,16 +1,36 @@
-import { Canvas, Numbers, Colors, Random, repeat } from "/toolkit/index.js";
-import noise from './../toolkit/noise.js';
+import { Canvas, Numbers, Colors, Random, Noise, UI, repeat } from "/toolkit/index.js";
+// import noise from './../toolkit/noise.js';
 
+let ui = UI.init(true);
 
-function draw(w, h) {
+ui.resetableInputs([
+  ['w', 'number', () => document.documentElement.clientWidth - document.getElementById('ui').clientWidth - 20],
+  ['h', 'number', () => document.documentElement.clientHeight - 50],
+  ['noise seed', 'number', () => Math.random()],
+  ['sysAmt', 'number', () => Math.round(Random.between(1, 4))]
+])
+
+ui.addButton('Draw', () => {
+  clear();
+  draw();
+});
+
+function clear() {
+  document.querySelectorAll('.piece').forEach(element => element.remove());
+}
+
+function draw() {
+  const w = ui.getValue('w');
+  const h = ui.getValue('h');
+  const seed = ui.getValue('seed');
+  const sysAmount = ui.getValue('sysAmt');
+
   const ctx = Canvas.create2D("", w, h);
-  noise.seed(Math.random());
-
+  Noise.seed(seed);
 
   Canvas.drawRect(ctx, [0, 0], w, h, { fill: 'rgba(0,0,0,0)' });
 
-
-  const amountOfSystems = Random.between(1, 4);
+  const amountOfSystems = sysAmount;
 
   let systems = [];
 
@@ -42,6 +62,15 @@ function draw(w, h) {
         return undefined;
       }
 
+      const ratio = Random.between(0.5, 1.5);
+      const sw = Math.floor(Random.between(200, 600));
+      const sh = Math.floor(sw * ratio);
+
+      const sx = Random.between(0, w - sw);
+      const sy = Random.between(0, h - sh);
+
+      rect = { sx, sy, sw, sh };
+
       rect = createRectangle();
     }
 
@@ -69,10 +98,10 @@ function draw(w, h) {
 
       let normalizedDistance  = Numbers.map(distance, 0, maxDistance * 0.6, 0, 100);
 
-      let pattern =  Numbers.map(noise.perlin2((noiseOffset + x) / 100, (noiseOffset + y) / 100), -1, 1, 0, 100);
-      let pattern2 = Numbers.map(noise.perlin2((noiseOffset + x) / 50,  (noiseOffset + y) / 50),  -1, 1, 0, 100);
-      let pattern3 = Numbers.map(noise.perlin2((noiseOffset + x) / 25,  (noiseOffset + y) / 25),  -1, 1, 0, 100);
-      let pattern4 = Numbers.map(noise.perlin2((noiseOffset + x) / 10,  (noiseOffset + y) / 10),  -1, 1, 0, 100);
+      let pattern =  Numbers.map(Noise.perlin2((noiseOffset + x) / 100, (noiseOffset + y) / 100), -1, 1, 0, 100);
+      let pattern2 = Numbers.map(Noise.perlin2((noiseOffset + x) / 50,  (noiseOffset + y) / 50),  -1, 1, 0, 100);
+      let pattern3 = Numbers.map(Noise.perlin2((noiseOffset + x) / 25,  (noiseOffset + y) / 25),  -1, 1, 0, 100);
+      let pattern4 = Numbers.map(Noise.perlin2((noiseOffset + x) / 10,  (noiseOffset + y) / 10),  -1, 1, 0, 100);
 
 
       let c = (
@@ -138,18 +167,6 @@ function draw(w, h) {
 
     Canvas.drawCircle(ctx, [x,  y], r, { fill: Colors.grey(255, b) });
   });
-
-  // for (let y = 0; y < h; y++){
-  //   for (let x = 0; x < w; x++){
-  //     let v = (noise.simplex2(x / 100, y / 100) + 1) / 2;
-
-  //     if (v > 0.9) {
-  //       Canvas.drawCircle(ctx, [x,  y], 1, { fill: '#ccc'})
-  //     }
-
-  //   }
-  // }
-  
 }
 
 draw(document.documentElement.clientWidth, document.documentElement.clientHeight);

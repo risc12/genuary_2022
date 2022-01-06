@@ -1,3 +1,7 @@
+export { default as UI } from './ui.js';
+export { default as Noise } from './noise.js';
+export { default as Vector } from './vector.js';
+
 export const Canvas = {
   create2D(title, w = 300, h = 300) {
     const piece = document.createElement("div");
