@@ -1,0 +1,41 @@
+body {
+  display: flex;
+  background-color: #222;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-width: 100vw;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+body.black {
+  background-color: black;
+}
+
+.piece {
+  margin: 5px;
+  text-align: center;
+}
+
+.canvas {
+  border: 5px solid black;
+  box-shadow: 0 0 5px black;
+  padding: 15px;
+}
+
+a#back {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+a {
+  color: #888;
+  text-decoration: none;
+}
+
+li {
+  list-style: none;
+}
