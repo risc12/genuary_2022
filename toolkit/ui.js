@@ -29,15 +29,10 @@ const el = (tag, attributes = {}, children = []) => {
 
 export default class UI {
   static init(isOpen = false, containerSelector = '#ui') {
-    console.log('Init ui');
-
-    return new UI(isOpen, document.querySelector(containerSelector));
+    return new UI(isOpen || window.location.search.includes('editor'), document.querySelector(containerSelector));
   }
 
   constructor(isOpen, containerElement) {
-    console.log('Construct ui');
-    console.log('< - - - Look there');
-
     this.container = containerElement;
     this.container.classList.add('ui');
 
@@ -76,8 +71,11 @@ export default class UI {
 
       if (valueToEmit === '') valueToEmit = element.attributes.defaultValue;
 
-      if (element.type === 'number') valueToEmit = parseInt(valueToEmit);
-      if (element.type === 'float') valueToEmit = parseFloat(valueToEmit);
+      if (element.dataset.type === 'number') valueToEmit = parseInt(valueToEmit);
+      if (element.dataset.type === 'float') {
+        valueToEmit = this.container.querySelector(`[name="${name}"][type="number"]`).value
+      }
+
 
       return valueToEmit;
     }
@@ -108,13 +106,14 @@ export default class UI {
       el('label', {}, `${name}: `),
       el('input', {
         type,
+        "data-type": type === 'range' ? "float": type,
         name,
         defaultValue,
         value: defaultValue,
         ...rest
       }),
       type === 'range' ? el('input', {
-        type: 'float', name, defaultValue, value: defaultValue, 'class': 'range-value', ...rest
+        type: 'number', "data-type": "float", name, defaultValue, value: defaultValue, 'class': 'range-value', ...rest
       }) : undefined
     ]);
 
@@ -122,7 +121,7 @@ export default class UI {
       this.emitChange('input')
 
       if (type === 'range') {
-        element.querySelector('input[type="float"]').value = element.querySelector('input[type="range"]').value;
+        element.querySelector('input[type="number"]').value = element.querySelector('input[type="range"]').value;
       }
     });
 
