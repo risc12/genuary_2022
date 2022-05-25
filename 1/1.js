@@ -27,7 +27,7 @@ function first() {
 
     const color = hl ? 'rgba(0, 255, 255, 1)' : `rgba(${gs * 255}, ${gs * 255}, ${gs * 50}, ${gs})`;
 
-    Canvas.drawCircle(ctx, location, size, { stroke: color, strokeWidth: 1 });
+    Canvas.drawCircle(ctx, location, size, { stroke: color, lineWidth: 1 });
   }
 }
 

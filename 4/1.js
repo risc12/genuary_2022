@@ -1,18 +1,18 @@
 import { Canvas, Numbers, Colors, Random, Noise, UI, Vector, repeat } from "/toolkit/index.js";
 // import noise from './../toolkit/noise.js';
 
-let ui = UI.init(true);
+let ui = UI.init(false);
 
 ui.resetableInputs([
   ['w', 'number', () => document.documentElement.clientWidth - document.getElementById('ui').clientWidth - 20],
   ['h', 'number', () => document.documentElement.clientHeight - 50],
-  ['t', 'range', () => 1, {min: 1, max: 5, step: 0.001}],
-  ['seed', 'range', () => (0.48341511178903285 || Math.random()), { min: 0, max: 1, step: 0.001 }],
-  ['res', 'range', () => 12, {min: 1, max: 50}],
-  ['noiseRes', 'range', () => 15, {min: 1, max: 50}],
-  ['showGrid', 'range', () => 1, {min: 0, max: 1}],
+  ['t', 'range', () => 0, {min: 1, max: 500, step: 0.001}],
+  ['seed', 'range', () => (Math.random()), { min: 0, max: 1, step: 0.0001 }],
+  ['res', 'range', () => 20, {min: 1, max: 50}],
+  ['noiseRes', 'range', () => 50, {min: 1, max: 50}],
+  ['showGrid', 'range', () => 0, {min: 0, max: 1}],
   ['steps', 'range', () => 100, { min: 1, max: 100, step: 1 }],
-  ['particles', 'range', () => 50, {min: 1, max: 1000}],
+  ['particles', 'range', () => 70, {min: 1, max: 1000}],
 
 ])
 
@@ -25,11 +25,14 @@ ui.onChange(clearAndDraw);
 
 ui.addButton('Draw', clearAndDraw);
 
+const w = ui.getValue('w');
+const h = ui.getValue('h');
+const ctx = Canvas.create2D("", w, h);
+
 
 function clear() {
-  document.querySelectorAll('.piece').forEach(element => element.remove());
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 }
-
 
 class Particle {
   constructor(c, v) {
@@ -66,8 +69,6 @@ class Particle {
 }
 
 function draw() {
-  const w = ui.getValue('w');
-  const h = ui.getValue('h');
   const t = ui.getValue('t');
   const steps = ui.getValue('steps');
   const showGrid = ui.getValue('showGrid') == 1;
@@ -79,8 +80,6 @@ function draw() {
 
   const seed = ui.getValue('seed');
   Noise.seed(seed);
-
-  const ctx = Canvas.create2D("", w, h);
 
   Canvas.drawRect(ctx, [0, 0], w, h, { fill: 'rgba(0,0,0,0)' });
 
@@ -101,64 +100,73 @@ function draw() {
           lineWidth: 1,
         });
 
-        //Canvas.drawCircle(ctx, [x1, y1], 1, { fill: Numbers.map(Noise.perlin2(x / 10, y / 10), -1, 1, 0, 1) > 0.5 ? '#fff' : '#000' });
+        Canvas.drawCircle(ctx, [x1, y1], 1, { fill: Numbers.map(Noise.perlin2(x / 10, y / 10), -1, 1, 0, 1) > 0.5 ? '#fff' : '#000' });
       }
     }
   }
 
   for (let p = 0; p < particles; p++) {
-    let isEven = p % 2 == 0;
-
     let particle = new Particle(
-      Vector.v2(0, isEven ? p : (w/res) - p),
+      Vector.v2(w/res, (h/res) - p),
       Vector.v2(0, 0)
     );
 
-    let log = [];
+    const path = [
+      [particle.x * res, particle.y * res]
+    ]
 
     for (let s = 0; s < steps; s++) {
       const x = particle.x;
       const y = particle.y;
 
-
       const f = vectorAt(x, y);
-
-      log.push({ x: particle.x, y: particle.y, w: w/res, h: h/res, fx: f.x, fy: f.y })
 
       particle.addForce(f);
       particle.update();
 
-      let x2 = particle.x;
-      let y2 = particle.y;
-
-
-      Canvas.drawLine(ctx, [x * res, y * res], [x2 * res, y2 * res], {
-        stroke: 'red',
-        lineWidth: 5,
-      });
-
-      
-      if (particle.x > (w / res)) {
-        console.log(s, 'hit x > w!');
-        particle.x = 1;
-      }
-      if (particle.y > (h / res)) {
-        console.log(s, 'hit y > h!');
-        particle.y = 1;
-      }
-
-      if (particle.x < 0) {
-        console.log(s, 'hit x < 0!');
-        particle.x = (w / res) - 1;
-      }
-      if (particle.y < 0) {
-        console.log(s, 'hit y < 0!');
-        particle.y = (h / res) - 1;
-      }
+      path.push([particle.x * res, particle.y * res]);
     }
 
-    console.table(log);
+    Canvas.drawPath(ctx, path, { stroke: Colors.hsl(p * 2.6, 100, 50), lineWidth: '3' });
   }
+
 }
 
-draw(document.documentElement.clientWidth, document.documentElement.clientHeight);
+draw();
+
+let playing = false;
+
+function animate() {
+  if (!playing) return;
+
+  ui.setValue('t', parseFloat(ui.getValue('t')) + 0.005)
+
+
+  let particles = parseInt(ui.getValue('particles'));
+
+  console.log(particles);
+
+  if (particles < 70) {
+    ui.setValue('particles', particles + 1)
+  }
+
+  clearAndDraw();
+
+  requestAnimationFrame(() => {
+    animate();
+  })
+}
+
+document.querySelector('canvas').addEventListener('click', () => {
+  playing = !playing;
+
+  let m = document.querySelector('#message');
+  if (m) m.remove();
+
+  ui.setValue('particles', 1);
+
+  if (playing) animate();
+})
+
+
+

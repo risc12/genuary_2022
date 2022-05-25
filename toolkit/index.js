@@ -21,7 +21,7 @@ export const Canvas = {
 
     return el.getContext("2d");
   },
-  drawCircle(ctx, [x, y], radius, { fill, stroke, strokeWidth }) {
+  drawCircle(ctx, [x, y], radius, { fill, stroke, lineWidth }) {
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
 
@@ -31,12 +31,12 @@ export const Canvas = {
     }
 
     if (stroke) {
-      ctx.lineWidth = strokeWidth;
+      ctx.lineWidth = lineWidth;
       ctx.strokeStyle = stroke;
       ctx.stroke();
     }
   },
-  drawRect(ctx, [x, y], w, h, { fill, stroke, strokeWidth }) {
+  drawRect(ctx, [x, y], w, h, { fill, stroke, lineWidth }) {
     ctx.beginPath();
     ctx.rect(x, y, w, h);
 
@@ -46,22 +46,38 @@ export const Canvas = {
     }
 
     if (stroke) {
-      ctx.lineWidth = strokeWidth;
+      ctx.lineWidth = lineWidth;
       ctx.strokeStyle = stroke;
       ctx.stroke();
     }
   },
-  drawLine(ctx, [x1, y1], [x2, y2], { stroke, strokeWidth }) {
+  drawLine(ctx, [x1, y1], [x2, y2], { stroke, lineWidth, lineJoin = 'miter' }) {
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
 
     if (stroke) {
-      ctx.lineWidth = strokeWidth;
+      ctx.lineWidth = lineWidth;
       ctx.strokeStyle = stroke;
+      ctx.lineJoin = lineJoin;
       ctx.stroke();
     }
   },
+  drawPath(ctx, [first, ...coords], { stroke, lineWidth, lineJoin = 'miter'}) {
+    ctx.beginPath();
+    ctx.moveTo(first[0], first[1]);
+
+    coords.forEach(([x, y]) => {
+      ctx.lineTo(x, y); 
+    });
+
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = stroke;
+    ctx.lineJoin = lineJoin;
+
+    ctx.stroke();
+    ctx.closePath();
+  }
 };
 
 export const Random = {
