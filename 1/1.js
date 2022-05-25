@@ -1,10 +1,9 @@
-import { Canvas, Random } from '/toolkit/index.js';
-import noise from './../toolkit/noise.js';
+import { Canvas, Random, Noise } from '../toolkit/index.js';
 
 console.log('Hello!')
 
 function first() {
-  noise.seed(Math.random());
+  Noise.seed(Math.random());
   const ctx = Canvas.create2D('', 800, 800);
 
   const W = ctx.canvas.width;
@@ -23,7 +22,7 @@ function first() {
 
     const hl = i > 9990;
 
-    const gs = (noise.perlin2(location[0], location[1]) + 0.5) / 2;
+    const gs = (Noise.perlin2(location[0], location[1]) + 0.5) / 2;
 
     const color = hl ? 'rgba(0, 255, 255, 1)' : `rgba(${gs * 255}, ${gs * 255}, ${gs * 50}, ${gs})`;
 

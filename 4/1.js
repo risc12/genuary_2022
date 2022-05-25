@@ -1,5 +1,4 @@
-import { Canvas, Numbers, Colors, Random, Noise, UI, Vector, repeat } from "/toolkit/index.js";
-// import noise from './../toolkit/noise.js';
+import { Canvas, Numbers, Colors, Noise, UI, Vector } from "../toolkit/index.js";
 
 let ui = UI.init(false);
 

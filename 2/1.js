@@ -1,4 +1,4 @@
-import { Canvas, Numbers, Colors } from "/toolkit/index.js";
+import { Canvas, Numbers, Colors } from "../toolkit/index.js";
 
 console.log("Hello!");
 
