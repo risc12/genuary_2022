@@ -167,6 +167,3 @@ document.querySelector('canvas').addEventListener('click', () => {
 
   if (playing) animate();
 })
-
-
-
