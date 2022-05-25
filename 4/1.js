@@ -10,8 +10,8 @@ ui.resetableInputs([
   ['res', 'range', () => 20, {min: 1, max: 50}],
   ['noiseRes', 'range', () => 50, {min: 1, max: 50}],
   ['showGrid', 'range', () => 0, {min: 0, max: 1}],
-  ['steps', 'range', () => 100, { min: 1, max: 100, step: 1 }],
-  ['particles', 'range', () => 70, {min: 1, max: 1000}],
+  ['steps', 'range', () => 100, { min: 1, max: 500, step: 1 }],
+  ['particles', 'range', () => 70, {min: 1, max: 200}],
 
 ])
 
